@@ -38,7 +38,7 @@ class LoginPageState extends State<LoginPage> {
                 children: [
                   const Spacer(),
                   const Text(
-                    'Register',
+                    'Login',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

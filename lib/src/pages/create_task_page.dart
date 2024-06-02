@@ -133,7 +133,16 @@ class CreateTaskPageState extends State<CreateTaskPage> {
                     backgroundColor:
                         Colors.purple, // Set button color to purple
                   ),
-                  child: const Text('Submit Task'),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(
+                        vertical: 14.0), // Padding top and bottom
+                    child: Text(
+                      'Submit Task',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
