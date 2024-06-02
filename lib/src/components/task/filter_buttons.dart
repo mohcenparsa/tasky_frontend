@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tasky/src/helpers/string_utils.dart';
 
 class FilterButtons extends StatelessWidget {
   final List<String> filters;
@@ -7,32 +6,28 @@ class FilterButtons extends StatelessWidget {
   final ValueChanged<String> onSelectFilter;
 
   const FilterButtons({
-    super.key,
+    Key? key,
     required this.filters,
     required this.selectedFilter,
     required this.onSelectFilter,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: filters.map((filter) {
-        return Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: ChoiceChip(
-            label: Text(
-                capitalize(
-                  filter,
-                ),
-                style: const TextStyle(fontSize: 10)),
-            selected: selectedFilter == filter,
-            onSelected: (bool selected) {
-              onSelectFilter(filter);
-            },
-          ),
-        );
-      }).toList(),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: filters.map((filter) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: ChoiceChip(
+              label: Text(filter),
+              selected: selectedFilter == filter,
+              onSelected: (_) => onSelectFilter(filter),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 }

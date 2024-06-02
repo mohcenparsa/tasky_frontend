@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tasky/config/app_config.dart';
 
 class TaskImage extends StatelessWidget {
   final double radius;
