@@ -78,58 +78,61 @@ class CreateTaskPageState extends State<CreateTaskPage> {
         title: const Text('Add New Task'),
       ),
       body: PageLayout(
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              CustomImagePicker(
-                imageBytes: _imageBytes,
-                labelText: 'Select Image',
-                onChanged: (bytes, fileName, fileType) {
-                  setState(() {
-                    _imageBytes = bytes;
-                    _imageName = fileName;
-                  });
-                },
-              ),
-              const SizedBox(height: 20),
-              CustomTextField(
-                controller: title,
-                labelText: 'Task Title',
-                validator: requiredValidator,
-              ),
-              CustomTextField(
-                controller: desc,
-                labelText: 'Description',
-                validator: requiredValidator,
-              ),
-              CustomDropdownFormFieldWithIcon(
-                value: priority,
-                options: priorityLevelWithIcon,
-                onChanged: (value) {
-                  setState(() {
-                    priority = value!;
-                  });
-                },
-                validator: (value) =>
-                    value == null ? 'Please select a priority' : null,
-                labelText: 'Task Priority',
-              ),
-              CustomDatePicker(
-                label: "Due Date",
-                initialDate: dueDate,
-                onDatePicked: (pickedDate) {
-                  setState(() {
-                    dueDate = pickedDate;
-                  });
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _submitForm,
-                child: const Text('Submit Task'),
-              ),
-            ],
+        child: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                CustomImagePicker(
+                  imageBytes: _imageBytes,
+                  labelText: 'Select Image',
+                  onChanged: (bytes, fileName, fileType) {
+                    setState(() {
+                      _imageBytes = bytes;
+                      _imageName = fileName;
+                    });
+                  },
+                ),
+                const SizedBox(height: 20),
+                CustomTextField(
+                  controller: title,
+                  labelText: 'Task Title',
+                  validator: requiredValidator,
+                ),
+                CustomTextField(
+                  controller: desc,
+                  labelText: 'Description',
+                  validator: requiredValidator,
+                ),
+                CustomDropdownFormFieldWithIcon(
+                  value: priority,
+                  options: priorityLevelWithIcon,
+                  onChanged: (value) {
+                    setState(() {
+                      priority = value!;
+                    });
+                  },
+                  validator: (value) =>
+                      value == null ? 'Please select a priority' : null,
+                  labelText: 'Task Priority',
+                ),
+                CustomDatePicker(
+                  label: "Due Date",
+                  initialDate: dueDate,
+                  onDatePicked: (pickedDate) {
+                    setState(() {
+                      dueDate = pickedDate;
+                    });
+                  },
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _submitForm,
+                  child: const Text('Submit Task'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

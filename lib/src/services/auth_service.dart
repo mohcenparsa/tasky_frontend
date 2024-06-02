@@ -48,8 +48,8 @@ class AuthService {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        // body: jsonEncode({'phone': "+93786203320", 'password': "Test@1234"}),
-        body: jsonEncode({'phone': mobile, 'password': password}),
+        body: jsonEncode({'phone': "+93786203320", 'password': "Test@1234"}),
+        // body: jsonEncode({'phone': mobile, 'password': password}),
       );
 
       if (response.statusCode == 201) {

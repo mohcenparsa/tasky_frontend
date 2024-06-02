@@ -40,101 +40,103 @@ class RegisterPageState extends State<RegisterPage> {
           const ArtImage(),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Spacer(),
-                  const Text(
-                    'Register',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+            child: SingleChildScrollView(
+              child: Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 100),
+                    const Text(
+                      'Register',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  CustomTextField(
-                    controller: nameController,
-                    labelText: 'Name',
-                    validator: requiredValidator,
-                  ),
-                  PhoneNumberField(
-                    phoneController: phoneController,
-                    number: number,
-                    initialCountry: initialCountry,
-                    validator: phoneValidator,
-                    onSaved: (newValue) {
-                      setState(() {
-                        phoneNumber = newValue?.phoneNumber;
-                      });
-                    },
-                  ),
-                  CustomNumberField(
-                    controller: experienceController,
-                    labelText: 'Years of Experience',
-                    keyboardType: TextInputType.number,
-                    validator: requiredValidator,
-                  ),
-                  CustomDropdownFormField(
-                    value: level,
-                    options: profileLevel,
-                    onChanged: (newValue) {
-                      setState(() {
-                        level = newValue!;
-                      });
-                    },
-                    validator: requiredValidator,
-                    labelText: 'Experience Level',
-                  ),
-                  CustomTextField(
-                    controller: addressController,
-                    labelText: 'Address',
-                    validator: requiredValidator,
-                  ),
-                  PasswordField(
-                    controller: passwordController,
-                    obscureText: _obscureText,
-                    toggleObscureText: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
-                    validator: requiredValidator,
-                  ),
-                  SignUpButton(
-                    label: "Sing in",
-                    formKey: formKey,
-                    onPressed: () async {
-                      if (formKey.currentState?.validate() ?? false) {
-                        formKey.currentState?.save();
+                    CustomTextField(
+                      controller: nameController,
+                      labelText: 'Name',
+                      validator: requiredValidator,
+                    ),
+                    PhoneNumberField(
+                      phoneController: phoneController,
+                      number: number,
+                      initialCountry: initialCountry,
+                      validator: phoneValidator,
+                      onSaved: (newValue) {
+                        setState(() {
+                          phoneNumber = newValue?.phoneNumber;
+                        });
+                      },
+                    ),
+                    CustomNumberField(
+                      controller: experienceController,
+                      labelText: 'Years of Experience',
+                      keyboardType: TextInputType.number,
+                      validator: requiredValidator,
+                    ),
+                    CustomDropdownFormField(
+                      value: level,
+                      options: profileLevel,
+                      onChanged: (newValue) {
+                        setState(() {
+                          level = newValue!;
+                        });
+                      },
+                      validator: requiredValidator,
+                      labelText: 'Experience Level',
+                    ),
+                    CustomTextField(
+                      controller: addressController,
+                      labelText: 'Address',
+                      validator: requiredValidator,
+                    ),
+                    PasswordField(
+                      controller: passwordController,
+                      obscureText: _obscureText,
+                      toggleObscureText: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                      validator: requiredValidator,
+                    ),
+                    SignUpButton(
+                      label: "Sign up",
+                      formKey: formKey,
+                      onPressed: () async {
+                        if (formKey.currentState?.validate() ?? false) {
+                          formKey.currentState?.save();
 
-                        bool register = await AuthService.register(
-                            phone: phoneNumber,
-                            password: passwordController.text,
-                            displayName: nameController.text,
-                            experienceYears: experienceController.text,
-                            address: addressController.text,
-                            level: level);
+                          bool register = await AuthService.register(
+                              phone: phoneNumber,
+                              password: passwordController.text,
+                              displayName: nameController.text,
+                              experienceYears: experienceController.text,
+                              address: addressController.text,
+                              level: level);
 
-                        if (register == true) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const OnboardingPage()),
-                          );
+                          if (register == true) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const OnboardingPage()),
+                            );
+                          }
                         }
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  const Redirect(
-                    text: "Already have account?",
-                    routeName: '/singin',
-                    label: 'Sing In',
-                  ),
-                  const SizedBox(height: 10),
-                ],
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    const Redirect(
+                      text: "Already have an account?",
+                      routeName: '/signin',
+                      label: 'Sign In',
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
               ),
             ),
           ),
