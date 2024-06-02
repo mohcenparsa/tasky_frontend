@@ -17,25 +17,41 @@ class OnboardingPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-                'assets/images/task_art.png'), // Replace with your image
+            SizedBox(
+              height: 400, // Set a fixed height for the image
+              child: Image.asset(
+                  'assets/images/task_art.png'), // Replace with your image
+            ),
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                'Welcome to the App!',
+                'Welcome to the Tasky App!',
                 style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'This is a brief description of your app and its functionalities.',
+                'This productive tool is designed to help you better manage your tasks project-wise conveniently!',
                 textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16.0),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
+            const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () => _completeOnboarding(context),
-              child: const Text('Next'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple,
+              ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                child: Text(
+                  'Next',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
             ),
           ],
         ),

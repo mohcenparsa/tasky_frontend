@@ -129,6 +129,10 @@ class CreateTaskPageState extends State<CreateTaskPage> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _submitForm,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        Colors.purple, // Set button color to purple
+                  ),
                   child: const Text('Submit Task'),
                 ),
               ],
