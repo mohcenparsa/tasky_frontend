@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tasky/src/pages/create_task_page.dart';
 import 'package:tasky/src/pages/login_page.dart';
-import 'package:tasky/src/pages/onboarding_page.dart';
 import 'package:tasky/src/pages/profile_page.dart';
 import 'package:tasky/src/pages/register_page.dart';
 import 'package:tasky/src/pages/tasks_page.dart';
@@ -15,8 +14,6 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const TaskListPage());
       case '/tasks/create':
         return MaterialPageRoute(builder: (_) => const CreateTaskPage());
-      case '/onboarding':
-        return MaterialPageRoute(builder: (_) => const OnboardingPage());
       case '/profile':
         return MaterialPageRoute(builder: (_) => const ProfilePage());
       case '/register':

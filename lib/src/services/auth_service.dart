@@ -2,17 +2,19 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tasky/config/app_config.dart';
+import 'package:jwt_decode/jwt_decode.dart'; // Import the package for decoding JWT tokens
 
 class AuthService {
   static String baseUrl = AppConfig.baseUrl;
 
-  static Future<bool> register(
-      {required String? phone,
-      required String password,
-      required String displayName,
-      required String experienceYears,
-      required String address,
-      required String level}) async {
+  static Future<bool> register({
+    required String? phone,
+    required String password,
+    required String displayName,
+    required String experienceYears,
+    required String address,
+    required String level,
+  }) async {
     try {
       final url = Uri.parse('$baseUrl/auth/register');
       final response = await http.post(
@@ -43,22 +45,25 @@ class AuthService {
   }
 
   static Future<bool> login(String mobile, String password) async {
-    final url = Uri.parse('$baseUrl/auth/login');
+    print(
+      'trying to login',
+    );
+    print(mobile);
+    print(password);
+    final url = Uri.parse('${AppConfig.baseUrl}/auth/login');
+    print(url);
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'phone': "+93786203320", 'password': "Test@1234"}),
-        // body: jsonEncode({'phone': mobile, 'password': password}),
+        body: jsonEncode({'phone': mobile, 'password': password}),
       );
 
       if (response.statusCode == 201) {
         final body = jsonDecode(response.body);
         final accessToken = body['access_token'];
         final refreshToken = body['refresh_token'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('access_token', accessToken);
-        await prefs.setString('refresh_token', refreshToken);
+        await saveTokens(accessToken, refreshToken);
         return true;
       } else {
         return false;
@@ -68,144 +73,91 @@ class AuthService {
     }
   }
 
-  Future<bool> isLoggedIn() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    try {
-      final token = prefs.getString('access_token');
-      if (token == null) return false;
-      await refreshToken();
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
   static Future<void> logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print('loging out');
+    final prefs = await SharedPreferences.getInstance();
     await prefs.remove('access_token');
     await prefs.remove('refresh_token');
   }
 
   static Future<void> profile() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     await prefs.remove('access_token');
   }
 
-  Future<http.Response> _sendAuthorizedRequest(
-      Future<http.Response> Function() requestFunction) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token');
-
-    if (token == null) {
-      throw Exception('No access token found');
-    }
-
-    var response = await requestFunction();
-
-    if (response.statusCode == 401) {
-      final newToken = await refreshToken();
-      if (newToken != "") {
-        response = await requestFunction();
-      }
-    }
-    return response;
-  }
-
-  Future<http.Response> getData(String endpoint) async {
-    final url = Uri.parse('$baseUrl/$endpoint');
-    return await _sendAuthorizedRequest(() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('access_token');
-      return await http.get(
-        url,
-        headers: {'Authorization': 'Bearer $token'},
-      );
-    });
-  }
-
-  Future<http.Response> postData(
-      String endpoint, Map<String, dynamic> data) async {
-    final url = Uri.parse('$baseUrl/$endpoint');
-    return await _sendAuthorizedRequest(() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('access_token');
-      return await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json'
-        },
-        body: jsonEncode(data),
-      );
-    });
-  }
-
-  Future<http.Response> deleteData(String endpoint) async {
-    final url = Uri.parse('$baseUrl/$endpoint');
-    return await _sendAuthorizedRequest(() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('access_token');
-      return await http.delete(
-        url,
-        headers: {'Authorization': 'Bearer $token'},
-      );
-    });
-  }
-
-  Future<http.Response> editData(
-      String endpoint, Map<String, dynamic> data) async {
-    final url = Uri.parse('$baseUrl/$endpoint');
-    return await _sendAuthorizedRequest(() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('access_token');
-      return await http.put(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json'
-        },
-        body: jsonEncode(data),
-      );
-    });
-  }
-
-  static Future<void> saveTokens(
-      String accessToken, String refreshToken) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  static Future<bool> saveTokens(
+    String accessToken,
+    String refreshToken,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('access_token', accessToken);
     await prefs.setString('refresh_token', refreshToken);
+    return true;
   }
 
-  static Future<String?> getAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token');
+  static Future<bool> isLoggedIn() async {
+    // 1. Retrieve the access token from secure storage
+    String? accessToken = await getCurrentAccessToken();
 
-    return token;
+    if (accessToken == null) {
+      return false;
+    }
+
+    // 3. Decode the access token
+    Map<String, dynamic> decodedToken = Jwt.parseJwt(accessToken);
+
+    // 4. Compare the expiration time with the current time
+    int? expiryTime =
+        decodedToken['exp']; // Expiration time in seconds since epoch
+    int currentTimeInSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+    if (expiryTime != null && expiryTime > currentTimeInSeconds) {
+      // Token is not expired
+      return true; // User is logged in
+    } else {
+      await logout();
+      // Token is expired
+      // Optionally, you can clear the expired token here
+      // await SecureStorage.clearAccessToken();
+      return false; // User is not logged in
+    }
+    // try {
+    //   final currentAccessToken = await getCurrentAccessToken();
+    //   if (currentAccessToken == null || currentAccessToken == '') return false;
+    //   await storeNewRefreshToken();
+    //   return true;
+    // } catch (e) {
+    //   return false;
+    // }
   }
 
-  static Future<String?> getRefreshToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('refresh_token');
-    return token;
-  }
+  static Future<String> storeNewRefreshToken() async {
+    final currentRefreshToken = await getCurrentRefreshToken();
+    if (currentRefreshToken == null) return "";
 
-  static Future<String> refreshToken() async {
-    final refreshToken = await getRefreshToken();
-    if (refreshToken == null) return "";
-
+    final uri = '${AppConfig.refreshTokenApi}token=$currentRefreshToken';
     final response = await http.get(
-      Uri.parse(
-          'https://todo.iraqsapp.com/auth/refresh-token?token=$refreshToken'),
+      Uri.parse(uri),
       headers: {'Content-Type': 'application/json'},
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      await saveTokens(data['access_token'], refreshToken);
-      return data['access_token'];
+      final newToken = data["access_token"];
+      await saveTokens(newToken, currentRefreshToken);
+      return newToken;
     } else {
       return "";
     }
+  }
+
+  static Future<String?> getCurrentAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
+  }
+
+  static Future<String?> getCurrentRefreshToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('refresh_token');
   }
 }

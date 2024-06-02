@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tasky/src/pages/onboarding_page.dart'; // Ensure this is imported
+
 import '../../services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -11,8 +10,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
-  final AuthService _authService = AuthService();
-
   @override
   void initState() {
     super.initState();
@@ -24,27 +21,18 @@ class SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _handleLoginStatus() async {
-    bool isLoggedIn = await _authService.isLoggedIn();
-    bool hasSeenOnboarding = await _hasSeenOnboarding();
-    await Future.delayed(const Duration(seconds: 2));
+    bool isLoggedIn = await AuthService.isLoggedIn();
 
-    if (!mounted) return;
+    await Future.delayed(const Duration(seconds: 1));
 
-    if (isLoggedIn) {
-      Navigator.pushReplacementNamed(context, '/tasks');
-    } else if (!hasSeenOnboarding) {
-      await Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const OnboardingPage()),
-      );
-    } else {
-      Navigator.pushReplacementNamed(context, '/login');
+    // Check if the widget is still mounted before performing navigation
+    if (mounted) {
+      if (isLoggedIn) {
+        Navigator.pushReplacementNamed(context, '/tasks');
+      } else {
+        Navigator.pushReplacementNamed(context, '/login');
+      }
     }
-  }
-
-  Future<bool> _hasSeenOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('hasSeenOnboarding') ?? false;
   }
 
   @override

@@ -15,11 +15,7 @@ class AppConfig {
   /// Returns the base URL for the API based on the environment.
   ///
   /// Uses a different URL for development and production environments.
-  static String get baseUrl {
-    return isDevelopment
-        ? 'http://20.20.20.252:5000/api'
-        : 'https://todo.iraqsapp.com';
-  }
+  static String baseUrl = 'https://todo.iraqsapp.com';
 
   /// The maximum width for the application layout.
   static const double maxWidth = 1000;
@@ -29,6 +25,9 @@ class AppConfig {
 
   /// The URL for the authentication API.
   static String authApi = "$baseUrl/auth";
+
+  /// The URL for the refreshTokenApi API.
+  static String refreshTokenApi = "$authApi/refresh-token?";
 
   /// The URL for the profile API.
   static String profileApi = "$authApi/profile";

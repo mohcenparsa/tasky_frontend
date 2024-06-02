@@ -9,7 +9,7 @@ class TaskService {
   static String baseUrl = 'https://todo.iraqsapp.com/todos';
   static Future<List<TaskItem>> getTasks() async {
     try {
-      final token = await AuthService.getAccessToken();
+      final token = await AuthService.getCurrentAccessToken();
       final response = await http.get(
         Uri.parse(baseUrl),
         headers: {'Authorization': 'Bearer $token'},
@@ -21,10 +21,7 @@ class TaskService {
             data.map((item) => TaskItem.fromJson(item)).toList();
         return tasks;
       } else if (response.statusCode == 401) {
-        print("Not authroized.....");
-        // If access token is expired, refresh it and retry the request
-        var newToken = await AuthService.refreshToken();
-        print('new token');
+        var newToken = await AuthService.storeNewRefreshToken();
         final retryResponse = await http.get(
           Uri.parse(baseUrl),
           headers: {'Authorization': 'Bearer $newToken'},
