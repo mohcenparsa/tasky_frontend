@@ -70,24 +70,12 @@ class AuthService {
 
   Future<bool> isLoggedIn() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     try {
       final token = prefs.getString('access_token');
       if (token == null) return false;
-
+      await refreshToken();
       return true;
-      // final url = Uri.parse('$baseUrl/auth/validate-token');
-      // try {
-      //   final response = await http.get(
-      //     url,
-      //     headers: {'x-auth-token': token},
-      //   );
-
-      //   if (response.statusCode == 200) {
-      //     final body = jsonDecode(response.body);
-      //     return body['valid'];
-      //   } else {
-      //     return false;
-      //   }
     } catch (e) {
       return false;
     }

@@ -8,6 +8,7 @@ import 'package:tasky/src/components/form/custom_date_picker.dart';
 import 'package:tasky/src/components/form/custom_dropdown_field_icon.dart';
 import 'package:tasky/src/components/form/custom_text_field.dart';
 import 'package:tasky/src/components/form/validators.dart';
+import 'package:tasky/src/components/layouts/page_layout.dart';
 import 'package:tasky/src/constants/dropdown_options.dart';
 import 'package:tasky/src/services/image_upload_service.dart';
 import 'package:tasky/src/services/task_service.dart';
@@ -32,7 +33,6 @@ class CreateTaskPageState extends State<CreateTaskPage> {
   String? _uploadedImageUrl;
 
   Future<void> _submitForm() async {
-    print("Submit button is clicked");
     if (_formKey.currentState!.validate()) {
       if (_imageBytes != null && _imageName != null) {
         final imageUrl =
@@ -60,7 +60,7 @@ class CreateTaskPageState extends State<CreateTaskPage> {
       title: title.text,
       desc: desc.text,
       priority: priority,
-      image: '${AppConfig.imageBaseUrl}$_uploadedImageUrl',
+      image: '${AppConfig.imageApi}$_uploadedImageUrl',
       dueDate: dueDate,
     );
   }
@@ -77,8 +77,7 @@ class CreateTaskPageState extends State<CreateTaskPage> {
       appBar: AppBar(
         title: const Text('Add New Task'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: PageLayout(
         child: Form(
           key: _formKey,
           child: ListView(
