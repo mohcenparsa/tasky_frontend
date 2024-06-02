@@ -17,13 +17,8 @@ class PageLayout extends StatelessWidget {
         constraints: BoxConstraints(
           maxWidth: maxWidth,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         alignment: Alignment.center,
-        child: Center(
-            child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: child,
-        )),
+        child: Center(child: child),
       ),
     );
   }
